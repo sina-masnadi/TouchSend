@@ -7,6 +7,7 @@ import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.BufferedWriter;
@@ -57,14 +58,24 @@ public class TouchActivity extends AppCompatActivity {
 
     }
 
-    private void sendCoordinates(int x, int y) {
+    private void sendCoordinates(int x, int y , int action) {
         try {
+            String outStr;
             PrintWriter out = new PrintWriter(new BufferedWriter(
                     new OutputStreamWriter(socket.getOutputStream())),
                     true);
-            out.println(x);
-            out.println(y);
-            out.println(",");
+            LinearLayout touchLayout = (LinearLayout)findViewById(R.id.touch_wrapper);
+            int top = touchLayout.getTop();
+            int bottom = touchLayout.getBottom();
+            int right = touchLayout.getRight();
+            int left = touchLayout.getLeft();
+
+
+            outStr = action + ":" + x + ":" + y + ":" + top + ":" + bottom + ":" + left + ":" + right + ",";
+            //out.println(x);
+            //out.println(y);
+            //out.println(",");
+            out.println(outStr);
             status.setText("Sent: " + "x: " + x + ", y: " + y);
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -127,10 +138,11 @@ public class TouchActivity extends AppCompatActivity {
 
             int x = (int) event.getX();
             int y = (int) event.getY();
+            int action = event.getAction();
 
 //            Log.i("Touch Send", "x: " + x + ", y: " + y);
 
-            sendCoordinates(x, y);
+            sendCoordinates(x, y, action);
 
             return true;
         }
